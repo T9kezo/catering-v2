@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Savor — Admin Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Toast Container -->
+  <div class="toast-wrapper" id="toastWrapper"></div>
+
+  <!-- Navbar -->
+  <nav class="savor-navbar">
+    <a class="navbar-brand-logo" href="#">
+      <i class="bi bi-egg-fried"></i>
+      <span>Savor</span>
+    </a>
+    <span style="font-size:.75rem;font-weight:700;color:var(--terracotta);background:rgba(193,68,14,.1);padding:.25rem .65rem;border-radius:50px;text-transform:uppercase;letter-spacing:.1em;">Admin</span>
+    <div class="navbar-actions" style="margin-left:auto;">
+      <span style="font-size:.85rem;color:var(--text-muted);" id="adminEmailDisplay"></span>
+      <button class="avatar-btn" id="logoutBtn" title="Logout"><i class="bi bi-box-arrow-right"></i></button>
+    </div>
+  </nav>
+
+  <div class="admin-layout">
+    <!-- Sidebar -->
+    <aside class="admin-sidebar">
+      <div class="sidebar-section-label">Overview</div>
+      <button class="sidebar-nav-btn active" data-section="dashboard">
+        <i class="bi bi-speedometer2"></i> Dashboard
+      </button>
+
+      <div class="sidebar-section-label">Catalog</div>
+      <button class="sidebar-nav-btn" data-section="add-product">
+        <i class="bi bi-plus-circle"></i> Add Product
+      </button>
+      <button class="sidebar-nav-btn" data-section="manage-products">
+        <i class="bi bi-grid"></i> Manage Products
+      </button>
+
+      <div class="sidebar-section-label">Operations</div>
+      <button class="sidebar-nav-btn" data-section="orders">
+        <i class="bi bi-receipt"></i> All Orders
+      </button>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="admin-content">
+
+      <!-- DASHBOARD -->
+      <section class="admin-section active" id="section-dashboard">
+        <div class="page-hero" style="padding-top:0;">
+          <div class="page-hero-greeting">Overview</div>
+          <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:600;color:var(--espresso);">Welcome back, <em style="font-style:italic;color:var(--terracotta);">Chef</em></h1>
+        </div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">🍽️</div>
+            <div class="stat-label-sm">Total Products</div>
+            <div class="stat-value" id="totalProducts">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">📋</div>
+            <div class="stat-label-sm">Total Orders</div>
+            <div class="stat-value" id="totalOrders">—</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-label-sm">Total Revenue</div>
+            <div class="stat-value" id="totalRevenue">—</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;">
+          <div class="admin-form-card" style="margin-bottom:0;">
+            <h3><i class="bi bi-clock-history me-2"></i>Recent Orders</h3>
+            <div id="recentOrdersList" style="display:flex;flex-direction:column;gap:.5rem;"></div>
+          </div>
+          <div class="admin-form-card" style="margin-bottom:0;">
+            <h3><i class="bi bi-bar-chart me-2"></i>Order Status Breakdown</h3>
+            <div id="statusBreakdown" style="display:flex;flex-direction:column;gap:.6rem;margin-top:.5rem;"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ADD PRODUCT -->
+      <section class="admin-section" id="section-add-product">
+        <div class="page-hero" style="padding-top:0;">
+          <div class="page-hero-greeting">Catalog</div>
+          <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:600;color:var(--espresso);">Add New <em style="font-style:italic;color:var(--terracotta);">Product</em></h1>
+        </div>
+        <div class="admin-form-card">
+          <h3><i class="bi bi-plus-circle me-2"></i>Product Details</h3>
+          <form id="productForm" novalidate>
+            <div class="admin-form-grid">
+              <div class="admin-form-row" style="margin-bottom:0;">
+                <label class="admin-form-label">Product Name *</label>
+                <input type="text" class="admin-input" id="productName" placeholder="e.g. Paneer Tikka" required maxlength="80">
+                <div class="invalid-feedback" id="productNameError"></div>
+              </div>
+              <div class="admin-form-row" style="margin-bottom:0;">
+                <label class="admin-form-label">Price (₹) *</label>
+                <input type="number" class="admin-input" id="productPrice" placeholder="0.00" min="0" step="0.01" required>
+                <div class="invalid-feedback" id="productPriceError"></div>
+              </div>
+            </div>
+            <div class="admin-form-grid" style="margin-top:1rem;">
+              <div class="admin-form-row" style="margin-bottom:0;">
+                <label class="admin-form-label">Category *</label>
+                <select class="admin-input admin-select" id="productCategory" required>
+                  <option value="">Select a category…</option>
+                  <option value="starters">Starters</option>
+                  <option value="mains">Mains</option>
+                  <option value="desserts">Desserts</option>
+                  <option value="beverages">Beverages</option>
+                  <option value="snacks">Snacks</option>
+                  <option value="specials">Specials</option>
+                </select>
+              </div>
+              <div class="admin-form-row" style="margin-bottom:0;">
+                <label class="admin-form-label">Product Image *</label>
+                <input type="file" class="admin-input" id="productImage" accept="image/*" required>
+              </div>
+            </div>
+            <div class="admin-form-row" style="margin-top:1rem;">
+              <label class="admin-form-label">Description *</label>
+              <textarea class="admin-input" id="productDescription" rows="3" placeholder="Describe the dish, ingredients, serving size…" required maxlength="300" style="resize:vertical;"></textarea>
+              <div style="text-align:right;font-size:.72rem;color:var(--text-muted);margin-top:.2rem;"><span id="descCharCount">0</span>/300</div>
+            </div>
+            <div style="display:flex;gap:.75rem;align-items:center;margin-top:.5rem;">
+              <button type="submit" class="btn-admin-primary" id="addProductBtn">
+                <span class="btn-text"><i class="bi bi-plus-lg me-1"></i>Add Product</span>
+                <span class="btn-spinner d-none"><span class="spinner-border spinner-border-sm"></span></span>
+              </button>
+              <button type="reset" class="btn-admin-secondary">Clear form</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!-- MANAGE PRODUCTS -->
+      <section class="admin-section" id="section-manage-products">
+        <div class="page-hero" style="padding-top:0;">
+          <div class="page-hero-greeting">Catalog</div>
+          <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:600;color:var(--espresso);">Manage <em style="font-style:italic;color:var(--terracotta);">Products</em></h1>
+        </div>
+        <div class="bulk-actions-bar" id="bulkActionsBar">
+          <i class="bi bi-check2-square"></i>
+          <span id="selectedCount">0 selected</span>
+          <button class="bulk-del-btn" id="bulkDeleteBtn"><i class="bi bi-trash me-1"></i>Delete Selected</button>
+          <button class="btn-admin-secondary" id="clearSelectionBtn" style="padding:.3rem .75rem;font-size:.78rem;">Clear</button>
+        </div>
+        <div class="admin-products-grid" id="productsList"></div>
+      </section>
+
+      <!-- ORDERS -->
+      <section class="admin-section" id="section-orders">
+        <div class="page-hero" style="padding-top:0;">
+          <div class="page-hero-greeting">Operations</div>
+          <h1 style="font-family:var(--font-display);font-size:1.8rem;font-weight:600;color:var(--espresso);">All <em style="font-style:italic;color:var(--terracotta);">Orders</em></h1>
+        </div>
+        <div class="orders-table-wrap">
+          <table class="orders-table">
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="ordersList"></tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Edit Product Modal -->
+  <div class="modal fade" id="editProductModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <span class="modal-title">Edit Product</span>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editProductId">
+          <div class="admin-form-grid">
+            <div class="admin-form-row" style="margin-bottom:0;">
+              <label class="admin-form-label">Name</label>
+              <input type="text" class="admin-input" id="editProductName">
+            </div>
+            <div class="admin-form-row" style="margin-bottom:0;">
+              <label class="admin-form-label">Price (₹)</label>
+              <input type="number" class="admin-input" id="editProductPrice" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="admin-form-row" style="margin-top:1rem;">
+            <label class="admin-form-label">Category</label>
+            <select class="admin-input admin-select" id="editProductCategory">
+              <option value="starters">Starters</option>
+              <option value="mains">Mains</option>
+              <option value="desserts">Desserts</option>
+              <option value="beverages">Beverages</option>
+              <option value="snacks">Snacks</option>
+              <option value="specials">Specials</option>
+            </select>
+          </div>
+          <div class="admin-form-row" style="margin-top:1rem;">
+            <label class="admin-form-label">Description</label>
+            <textarea class="admin-input" id="editProductDescription" rows="3" style="resize:vertical;"></textarea>
+          </div>
+          <div class="admin-form-row" style="margin-top:1rem;">
+            <label class="admin-form-label">New Image (optional)</label>
+            <input type="file" class="admin-input" id="editProductImage" accept="image/*">
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn-admin-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button class="btn-admin-primary" id="saveEditBtn"><i class="bi bi-check-lg me-1"></i>Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="js/firebase-config.js"></script>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
